@@ -29,3 +29,10 @@ Thumbs.db
 # Local uploads
 uploads/
 temp/
+
+# Backup files
+app_backup.py
+
+# Local test media
+*.mp4
+*.wav
