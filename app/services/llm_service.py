@@ -1,6 +1,6 @@
-from typing import Optional
-
 import ollama
+
+from app.core.config import get_settings
 
 
 class LLMService:
@@ -13,8 +13,13 @@ class LLMService:
 
     def __init__(
         self,
-        model: str = "llama3.2:3b"
+        model: str | None = None
     ):
+        if model is None:
+            model = (
+                get_settings().ollama_model
+            )
+
         self.model = model
 
     def generate(

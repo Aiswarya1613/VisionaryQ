@@ -1,10 +1,6 @@
-import os
-from typing import List, Dict, Any
+from typing import Any, Dict, List
 
-from dotenv import load_dotenv
-
-
-load_dotenv()
+from app.core.config import get_settings
 
 
 class RAGService:
@@ -30,11 +26,8 @@ class RAGService:
         self.llm_service = llm_service
 
         if min_score is None:
-            min_score = float(
-                os.getenv(
-                    "RAG_MIN_SCORE",
-                    "0.30"
-                )
+            min_score = (
+                get_settings().rag_min_score
             )
 
         self.min_score = min_score

@@ -3,15 +3,12 @@ from typing import Any, Dict, List
 
 from faster_whisper import WhisperModel
 
+from app.core.config import get_settings
+
 
 # ---------------------------------------------------------
 # Whisper configuration
 # ---------------------------------------------------------
-
-DEFAULT_MODEL_NAME = os.getenv(
-    "WHISPER_MODEL",
-    "small.en"
-)
 
 _whisper_model = None
 
@@ -19,21 +16,21 @@ _whisper_model = None
 def get_whisper_model() -> WhisperModel:
     """
     Lazily load and cache the Faster-Whisper model.
-
-    The model is loaded only once per application process.
     """
 
     global _whisper_model
 
     if _whisper_model is None:
 
+        settings = get_settings()
+
         print(
             f"Loading Faster-Whisper model: "
-            f"{DEFAULT_MODEL_NAME}"
+            f"{settings.whisper_model}"
         )
 
         _whisper_model = WhisperModel(
-            DEFAULT_MODEL_NAME,
+            settings.whisper_model,
             device="cpu",
             compute_type="int8"
         )

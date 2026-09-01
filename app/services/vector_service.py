@@ -1,13 +1,9 @@
-import os
-from typing import List, Dict, Any
+from typing import Any, Dict, List
 
-from dotenv import load_dotenv
 from pinecone import Pinecone, ServerlessSpec
 
+from app.core.config import get_settings
 from app.services.embedding_service import EmbeddingService
-
-
-load_dotenv()
 
 
 class VectorService:
@@ -26,10 +22,14 @@ class VectorService:
         self,
         embedding_service=None
     ):
-        self.api_key = os.getenv("PINECONE_API_KEY")
-        self.index_name = os.getenv(
-            "PINECONE_INDEX_NAME",
-            "visionaryq"
+        settings = get_settings()
+
+        self.api_key = (
+            settings.pinecone_api_key
+        )
+
+        self.index_name = (
+            settings.pinecone_index_name
         )
 
         self.embedding_service = (
