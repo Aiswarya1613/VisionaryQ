@@ -13,12 +13,28 @@ from app.services.llm_service import LLMService
 def test_llm_service_uses_central_config(
     monkeypatch
 ):
+    captured = {}
+
+    class FakeClient:
+        def __init__(
+            self,
+            host=None
+        ):
+            captured["host"] = host
+
     monkeypatch.setattr(
         llm_module,
         "get_settings",
         lambda: SimpleNamespace(
-            ollama_model="test-config-model"
+            ollama_model="test-config-model",
+            ollama_host="http://test-ollama:11434",
         ),
+    )
+
+    monkeypatch.setattr(
+        llm_module.ollama,
+        "Client",
+        FakeClient,
     )
 
     service = LLMService()
@@ -27,24 +43,57 @@ def test_llm_service_uses_central_config(
         "test-config-model"
     )
 
+    assert service.host == (
+        "http://test-ollama:11434"
+    )
+
+    assert captured["host"] == (
+        "http://test-ollama:11434"
+    )
+
 
 def test_llm_service_allows_model_override(
     monkeypatch
 ):
+    captured = {}
+
+    class FakeClient:
+        def __init__(
+            self,
+            host=None
+        ):
+            captured["host"] = host
+
     monkeypatch.setattr(
         llm_module,
         "get_settings",
         lambda: SimpleNamespace(
-            ollama_model="config-model"
+            ollama_model="config-model",
+            ollama_host="http://config-ollama:11434",
         ),
     )
 
+    monkeypatch.setattr(
+        llm_module.ollama,
+        "Client",
+        FakeClient,
+    )
+
     service = LLMService(
-        model="override-model"
+        model="override-model",
+        host="http://override-ollama:11434",
     )
 
     assert service.model == (
         "override-model"
+    )
+
+    assert service.host == (
+        "http://override-ollama:11434"
+    )
+
+    assert captured["host"] == (
+        "http://override-ollama:11434"
     )
 
 
@@ -70,20 +119,32 @@ def test_generate_rejects_empty_query():
 def test_generate_returns_fallback_for_empty_context(
     monkeypatch
 ):
-    def fail_if_called(*args, **kwargs):
-        pytest.fail(
-            "Ollama should not be called "
-            "when context is empty."
-        )
+    class FakeClient:
+        def __init__(
+            self,
+            host=None
+        ):
+            pass
+
+        def generate(
+            self,
+            *args,
+            **kwargs
+        ):
+            pytest.fail(
+                "Ollama should not be called "
+                "when context is empty."
+            )
 
     monkeypatch.setattr(
         llm_module.ollama,
-        "generate",
-        fail_if_called,
+        "Client",
+        FakeClient,
     )
 
     service = LLMService(
-        model="test-model"
+        model="test-model",
+        host="http://test-ollama:11434",
     )
 
     result = service.generate(
@@ -106,28 +167,37 @@ def test_generate_calls_ollama_with_grounded_prompt(
 ):
     captured = {}
 
-    def fake_generate(
-        model,
-        prompt
-    ):
-        captured["model"] = model
-        captured["prompt"] = prompt
+    class FakeClient:
+        def __init__(
+            self,
+            host=None
+        ):
+            captured["host"] = host
 
-        return {
-            "response": (
-                "  Generative AI creates "
-                "new content.  "
-            )
-        }
+        def generate(
+            self,
+            model,
+            prompt
+        ):
+            captured["model"] = model
+            captured["prompt"] = prompt
+
+            return {
+                "response": (
+                    "  Generative AI creates "
+                    "new content.  "
+                )
+            }
 
     monkeypatch.setattr(
         llm_module.ollama,
-        "generate",
-        fake_generate,
+        "Client",
+        FakeClient,
     )
 
     service = LLMService(
-        model="test-model"
+        model="test-model",
+        host="http://test-ollama:11434",
     )
 
     result = service.generate(
@@ -136,6 +206,10 @@ def test_generate_calls_ollama_with_grounded_prompt(
             "Generative AI creates "
             "new content."
         ),
+    )
+
+    assert captured["host"] == (
+        "http://test-ollama:11434"
     )
 
     assert captured["model"] == (

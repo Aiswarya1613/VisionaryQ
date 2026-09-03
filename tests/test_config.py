@@ -9,6 +9,7 @@ ENVIRONMENT_VARIABLES = [
     "WHISPER_MODEL",
     "RAG_MIN_SCORE",
     "OLLAMA_MODEL",
+    "OLLAMA_HOST",
 ]
 
 
@@ -46,6 +47,7 @@ def make_settings(
     whisper_model="small.en",
     rag_min_score=0.30,
     ollama_model="llama3.2:3b",
+    ollama_host="http://localhost:11434",
 ):
     return Settings(
         pinecone_api_key=pinecone_api_key,
@@ -53,6 +55,7 @@ def make_settings(
         whisper_model=whisper_model,
         rag_min_score=rag_min_score,
         ollama_model=ollama_model,
+        ollama_host=ollama_host,
     )
 
 
@@ -83,6 +86,10 @@ def test_get_settings_uses_expected_defaults(
 
     assert settings.ollama_model == (
         "llama3.2:3b"
+    )
+
+    assert settings.ollama_host == (
+        "http://localhost:11434"
     )
 
 
@@ -118,6 +125,11 @@ def test_get_settings_reads_environment_values(
         "unit-test-model",
     )
 
+    monkeypatch.setenv(
+        "OLLAMA_HOST",
+        "http://custom-ollama:11434"
+    )
+
     settings = get_settings()
 
     assert settings.pinecone_api_key == (
@@ -136,6 +148,10 @@ def test_get_settings_reads_environment_values(
 
     assert settings.ollama_model == (
         "unit-test-model"
+    )
+
+    assert settings.ollama_host == (
+        "http://custom-ollama:11434"
     )
 
 

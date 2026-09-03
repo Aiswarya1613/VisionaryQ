@@ -13,14 +13,24 @@ class LLMService:
 
     def __init__(
         self,
-        model: str | None = None
+        model: str | None = None,
+        host: str | None = None
     ):
-        if model is None:
-            model = (
-                get_settings().ollama_model
-            )
+        settings = get_settings()
 
-        self.model = model
+        self.model = (
+            model
+            or settings.ollama_model
+        )
+
+        self.host = (
+            host
+            or settings.ollama_host
+        )
+
+        self.client = ollama.Client(
+            host=self.host
+        )
 
     def generate(
         self,
@@ -63,7 +73,7 @@ Question:
 Answer:
 """
 
-        response = ollama.generate(
+        response = self.client.generate(
             model=self.model,
             prompt=prompt
         )

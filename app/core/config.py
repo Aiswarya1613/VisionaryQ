@@ -30,6 +30,7 @@ class Settings:
 
     # Ollama
     ollama_model: str
+    ollama_host: str
 
     def validate_pinecone(self) -> None:
         """
@@ -89,5 +90,9 @@ def get_settings() -> Settings:
         ollama_model=os.getenv(
             "OLLAMA_MODEL",
             "llama3.2:3b",
+        ),
+        ollama_host=os.getenv(
+            "OLLAMA_HOST",
+            "http://localhost:11434",
         ),
     )
