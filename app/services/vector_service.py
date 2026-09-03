@@ -3,8 +3,13 @@ from typing import Any, Dict, List
 from pinecone import Pinecone, ServerlessSpec
 
 from app.core.config import get_settings
+from app.core.logging import get_logger
 from app.services.embedding_service import EmbeddingService
 
+
+logger = get_logger(
+    "vector"
+)
 
 class VectorService:
     """
@@ -51,7 +56,7 @@ class VectorService:
                 "PINECONE_API_KEY is not configured."
             )
 
-        print("Initializing Pinecone...")
+        logger.info("Initializing Pinecone")
 
         self.client = Pinecone(
             api_key=self.api_key
@@ -64,9 +69,9 @@ class VectorService:
 
         if self.index_name not in existing_indexes:
 
-            print(
-                f"Creating Pinecone index: "
-                f"{self.index_name}"
+            logger.info(
+                "Creating Pinecone index: %s",
+                self.index_name
             )
 
             dimension = (
@@ -89,9 +94,9 @@ class VectorService:
 
         self.initialized = True
 
-        print(
-            f"Pinecone initialized successfully: "
-            f"{self.index_name}"
+        logger.info(
+            "Pinecone initialized successfully: %s",
+            self.index_name
         )
 
     def add_documents(

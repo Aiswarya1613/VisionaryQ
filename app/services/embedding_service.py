@@ -1,7 +1,14 @@
 from typing import List
+
 import numpy as np
 from sentence_transformers import SentenceTransformer
 
+from app.core.logging import get_logger
+
+
+logger = get_logger(
+    "embedding"
+)
 
 class EmbeddingService:
     """
@@ -23,15 +30,16 @@ class EmbeddingService:
         """
 
         if self.model is None:
-            print(
-                f"Loading embedding model: {self.model_name}"
+            logger.info(
+                "Loading embedding model: %s",
+                self.model_name
             )
 
             self.model = SentenceTransformer(
                 self.model_name
             )
 
-            print("Embedding model loaded successfully.")
+            logger.info("Embedding model loaded successfully.")
 
     def embed_text(
         self,

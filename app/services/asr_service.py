@@ -4,7 +4,12 @@ from typing import Any, Dict, List
 from faster_whisper import WhisperModel
 
 from app.core.config import get_settings
+from app.core.logging import get_logger
 
+
+logger = get_logger(
+    "asr"
+)
 
 # ---------------------------------------------------------
 # Whisper configuration
@@ -24,9 +29,9 @@ def get_whisper_model() -> WhisperModel:
 
         settings = get_settings()
 
-        print(
-            f"Loading Faster-Whisper model: "
-            f"{settings.whisper_model}"
+        logger.info(
+            "Loading Faster-Whisper model: %s",
+            settings.whisper_model
         )
 
         _whisper_model = WhisperModel(
@@ -35,10 +40,9 @@ def get_whisper_model() -> WhisperModel:
             compute_type="int8"
         )
 
-        print(
+        logger.info(
             "Faster-Whisper model loaded successfully."
         )
-
     return _whisper_model
 
 
@@ -59,8 +63,9 @@ def transcribe_video(
 
     model = get_whisper_model()
 
-    print(
-        f"Transcribing video: {video_path}"
+    logger.info(
+        "Transcribing video: %s",
+        os.path.basename(video_path)
     )
 
     segments, info = model.transcribe(
@@ -90,15 +95,21 @@ def transcribe_video(
             }
         )
 
-        print(
-            f"[{segment.start:.2f}s -> "
-            f"{segment.end:.2f}s] "
-            f"{text}"
+        logger.debug(
+            "Transcribed segment: %.2fs -> %.2fs",
+            segment.start,
+            segment.end
         )
 
     transcript = " ".join(
         transcript_parts
     ).strip()
+
+    logger.info(
+        "Transcription completed: %d segments, language=%s",
+        len(segment_data),
+        info.language
+    )
 
     return {
         "text": transcript,
@@ -132,10 +143,11 @@ def video_to_text(
 
         return result["text"]
 
-    except Exception as e:
+    except Exception:
 
-        print(
-            f"ASR error: {e}"
+        logger.exception(
+            "ASR processing failed for video: %s",
+            os.path.basename(video_path)
         )
 
         return ""
