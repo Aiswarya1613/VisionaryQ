@@ -1,28 +1,61 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
   <title>VisionaryQ</title>
-  <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+
+  <link rel="stylesheet" href="{{ url_for('static', path='/styles.css') }}">
 </head>
+
 <body>
   <div class="container">
-    <div class="section upload-section">
+
+    <section class="section upload-section">
       <h1>Upload Video</h1>
-      <input type="file" id="videoUpload" accept="video/*" />
-      <div id="videoStatus">No video uploaded yet.</div>
-    </div>
-    <div class="section chat-section" id="chatSection">
-      <h1>VisionaryQ</h1>
-      <div class="chat-window" id="chatWindow"></div>
-      <div class="chat-controls">
-        <input type="text" id="userInput" placeholder="Type your question..." />
-        <button id="sendButton">Send</button>
+
+      <p class="subtitle">
+        Upload a video and VisionaryQ will make its
+        spoken content searchable.
+      </p>
+
+      <input type="file" id="videoUpload" accept=".mp4,.avi,.mov,.mkv,.webm,video/*">
+
+      <div id="videoStatus" role="status" aria-live="polite">
+        No video uploaded yet.
       </div>
-    </div>
+
+      <div id="videoDetails"></div>
+    </section>
+
+
+    <section class="section chat-section">
+      <h1>VisionaryQ</h1>
+
+      <p class="subtitle">
+        Ask questions about your uploaded video.
+      </p>
+
+      <div class="chat-window" id="chatWindow" aria-live="polite">
+        <div class="chat-message bot-message">
+          VisionaryQ: Upload a video to begin.
+        </div>
+      </div>
+
+      <div class="chat-controls">
+        <input type="text" id="userInput" placeholder="Upload a video before asking questions..." disabled>
+
+        <button id="sendButton" disabled>
+          Send
+        </button>
+      </div>
+    </section>
+
   </div>
 
-  <script src="{{ url_for('static', filename='script.js') }}"></script>
+  <script src="{{ url_for('static', path='/script.js') }}"></script>
 </body>
+
 </html>
