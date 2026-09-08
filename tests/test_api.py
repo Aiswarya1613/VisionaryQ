@@ -156,13 +156,28 @@ def test_root_endpoint():
     response = client.get("/")
 
     assert response.status_code == 200
+    assert response.headers["content-type"].startswith("text/html")
 
-    assert response.json() == {
-        "application": "VisionaryQ",
-        "status": "running",
-        "version": "1.0.0",
-    }
+    assert "VisionaryQ" in response.text
+    assert "/static/styles.css" in response.text
+    assert "/static/script.js" in response.text
 
+def test_frontend_styles_are_served():
+    response = client.get("/static/styles.css")
+
+    assert response.status_code == 200
+    assert "text/css" in response.headers["content-type"]
+    assert ".container" in response.text
+
+
+def test_frontend_script_is_served():
+    response = client.get("/static/script.js")
+
+    assert response.status_code == 200
+
+    assert "/api/v1/video/ingest" in response.text
+    assert "/api/v1/query" in response.text
+    assert "currentVideoId" in response.text
 
 def test_health_endpoint():
     response = client.get(

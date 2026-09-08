@@ -144,3 +144,52 @@ h1 {
     opacity: 1;
   }
 }
+
+.subtitle {
+  color: #2d3142;
+  text-align: center;
+  margin: 0 0 20px;
+  opacity: 0.8;
+}
+
+#videoDetails {
+  margin-top: 12px;
+  color: #2d3142;
+  font-size: 0.9rem;
+  text-align: center;
+  line-height: 1.5;
+}
+
+.chat-controls input:disabled,
+.chat-controls button:disabled {
+  cursor: not-allowed;
+  opacity: 0.55;
+}
+
+@media (max-width: 768px) {
+  body {
+    min-height: 100vh;
+    height: auto;
+    padding: 20px 0;
+  }
+
+  .container {
+    flex-direction: column;
+    width: 92%;
+    height: auto;
+    min-height: 90vh;
+  }
+
+  .upload-section {
+    border-right: none;
+    border-bottom: 2px solid #fff;
+  }
+
+  .section {
+    padding: 24px 18px;
+  }
+
+  .chat-window {
+    height: 350px;
+  }
+}

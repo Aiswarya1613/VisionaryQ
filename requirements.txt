@@ -25,3 +25,5 @@ pinecone==9.1.0
 
 # Local LLM
 ollama==0.6.2
+
+Jinja2==3.1.6
